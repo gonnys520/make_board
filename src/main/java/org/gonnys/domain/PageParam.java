@@ -19,11 +19,6 @@ public class PageParam {
 		this.display = 10;
 	}
 	
-	public int getSkip() {
-		
-		return (this.page -1 ) * 10;
-	}
-
 	public void setTotal(int total) {
 		this.total = total;
 		this.end = (int) (Math.ceil(this.page / PER)) * 10;
@@ -31,7 +26,7 @@ public class PageParam {
 
 		// end는 다시 계산해준다.
 		if ((this.end * 10) > total) {
-			this.end = (int) (Math.ceil(total / 10.0));
+			this.end = (int) (Math.ceil(total / PER));
 			this.next = false;
 		} else {
 			this.next = true;
@@ -41,6 +36,13 @@ public class PageParam {
 
 	}
 	
+	
+	public int getSkip() {
+		
+		return (this.page -1 ) * 10;
+	}
+
+
 	public String getLink(String path) {
 		return UriComponentsBuilder.fromPath(path)
 				.queryParam("bno", this.bno)

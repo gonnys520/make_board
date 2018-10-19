@@ -1,9 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
 <%@include file="../includes/header.jsp"%>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+
+
 <div class="row">
 	<div class="col-lg-12">
 		<h1 class="page-header">List</h1>
@@ -12,10 +14,20 @@
 </div>
 <!-- /.row -->
 
+
 <div class="row">
 	<div class="col-lg-12">
 		<div class="panel panel-default">
 			<div class="panel-heading">Board List</div>
+			<div style = "margin: 10px 0 0 15px">
+			<select id="select">
+				<option value="10" ${pageObj.display == 10 ? "selected":""}>10</option>
+				<option value="20" ${pageObj.display == 20 ? "selected":""}>20</option>
+				<option value="50" ${pageObj.display == 50 ? "selected":""}>50</option>
+				<option value="100" ${pageObj.display == 100 ? "selected":""}>100</option>
+			</select>
+			개씩 보기</div>
+			
 			<!-- /.panel-heading -->
 			<div class="panel-body">
 				<div class="table-responsive">
@@ -50,12 +62,13 @@
 	</div>
 	<button type="button" class="btn btn-primary btn-lg btn-block"
 		onclick="location.href='/board/register'">글쓰기</button>
-		<br/>
+	<br />
 
 	<!-- /.col-lg-6 -->
 	<div class="dataTables_paginate paging_simple_numbers"
 		id="dataTables-example_paginate">
-		<ul class="pagination" style="display:table; margin-left:auto; margin-right:auto">
+		<ul class="pagination"
+			style="display: table; margin-left: auto; margin-right: auto">
 			<c:if test="${pageObj.prev}">
 				<li class="paginate_button previous"
 					aria-controls="dataTables-example" tabindex="0"
@@ -72,15 +85,20 @@
 					href="${pageObj.end +1}">Next</a></li>
 			</c:if>
 		</ul>
-			<br/><br/>
+		<br />
+		<br />
 	</div>
 </div>
 <!-- /#page-wrapper -->
 
 
+<!-- form -->
 <form id='actionForm'>
 	<input type='hidden' name='page' id='page' value='${pageObj.page}'>
+	<input type='hidden' name='display' id='display'
+		value='${pageObj.display}'>
 </form>
+
 
 
 <!-- Modal -->
@@ -106,57 +124,73 @@
 <%@include file="../includes/footer.jsp"%>
 
 
-<script>
-   $(document).ready(function() {
-      
-	  var actionForm = $("#actionForm");
-      var pageNum = ${pageObj.page};
-      var msg = $("#myModal");
-      var result = '<c:out value="${result}"/>';
+  <script>
+      $(document).ready(function() {
 
-	checkModal(result);
-      
-      history.replaceState({},null,null);
-      
-      function checkModal(result){
-    	  if (result === '' || history.state) {
-    		  return;
-    	  }
-      if (result === 'SUCCESS') {
-         $(".modal-body").html("작업이 성공적으로 처리되였습니다.");
-         msg.modal("show");
+         var actionForm = $("#actionForm");
+         var pageNum = ${pageObj.page};
+         
+         //게시판 제목 클릭하기
+         $(".board").on("click",function(e){
+            e.preventDefault();
+            var bno = $(this).attr("href");
+            actionForm.append("<input type='hidden' name='bno' value='"+bno+"'>");
+            actionForm.attr("action", "/board/read")
+            .attr("method", "get").submit();
+
+         });
+         
+         //버튼 활성화
+         $('.pagination li[data-page='+pageNum+']').addClass("active");
+            
+         //버튼 클릭
+         $('.pagination li a').on("click", function(e){
+            
+            e.preventDefault();
+            var target = $(this).attr("href");
+            console.log(target);
+            $("#page").val(target);
+
+            actionForm.attr("action", "/board/list")
+            .attr("method", "get").submit();
+            
+         });
+             
+         //selectbox 코드
+         $('#select').change(function(e){
+            
+           e.preventDefault();
+           
+             var display = $(this).val();
+           $("#display").val(display);
+           
+            actionForm.attr("action", "/board/list")
+            .attr("method", "get").submit();
+            
+         });
+         
+         var msg = $("#myModal");
+         var result = '<c:out value="${result}"/>';
+
+         checkModal(result);
+         history.replaceState({}, null, null);
+         
+         function checkModal(result){
+            
+            if(result === ''||history.state){
+               return;
+            }
+            
+            if (result === 'success') {
+                 $(".modal-body").html("작업 성공");
+                 msg.modal("show");
+         }
          
       }
-      
-      }
-      
-      
-      //조회: 제목 클릭 이벤트
-      $(".board").on("click", function(e){
-    	  e.preventDefault();
-    	  var bno = $(this).attr("href");
-    	  actionForm.append("<input type='hidden' name='bno' value='"+bno+"'>");
-     	 actionForm.attr("action", "/board/read")
-    	 .attr("method", "get").submit();
-      });
-      
-      $('.pagination li[data-page='+pageNum+']').addClass("active");   // 속성으로 찾을 수 있다
-      
-      $('.pagination li a').on("click", function(e){
-    	 e.preventDefault(); // 기본 동작 막음 : 눌러도 아무 변화없게
-    	 var target = $(this).attr("href");
+         
+    });
 
-    	 
-      	 $("#page").val(target);
-    	 actionForm.attr("action", "/board/list")
-    	 .attr("method", "get").submit();
-  
-    	  
-      });
-
-
-   });
-</script>
+   </script>
 </body>
 
 </html>
