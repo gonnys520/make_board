@@ -27,18 +27,17 @@
 						<form role="form" action="/board/register" method="post">
 							<div class="form-group">
 								<label>Title</label> <input class="form-control" name='title'
-									value='제목'>
+									placeholder='제목'>
 							</div>
 							<div class="form-group">
 								<label>Writer</label> <input class="form-control" name='writer'
-									value='작성자'>
+									placeholder='작성자'>
 							</div>
 							<div class="form-group">
 								<label>Text area</label>
-								<textarea class="form-control" name='content' rows="20">내용</textarea>
+								<textarea class="form-control" name='content' placeholder='내용' rows="20"></textarea>
 							</div>
-
-							<button type="submit" class="btn btn-default">Submit</button>
+							<button type="submit" class="btn btn-default" style="position: absolute; right:0;">작성완료</button>
 						</form>
 					</div>
 				</div>

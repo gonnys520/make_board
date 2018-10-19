@@ -3,14 +3,14 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
 <%@include file="../includes/header.jsp"%>
-
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <div class="row">
 	<div class="col-lg-12">
-
 		<h1 class="page-header">List</h1>
 	</div>
 	<!-- /.col-lg-12 -->
 </div>
+<!-- /.row -->
 
 <div class="row">
 	<div class="col-lg-12">
@@ -32,18 +32,15 @@
 							<c:forEach items="${list}" var="board">
 								<tr>
 									<td><c:out value="${board.bno}" /></td>
-									<td><c:out value="${board.title}" /></td>
+									<td><a href='${board.bno}' class='board'><c:out
+												value="${board.title}" /></a></td>
 									<td><c:out value="${board.writer}" /></td>
-									<td><c:out value="${board.regdate}" /></td>
+									<td><fmt:formatDate value="${board.regdate}"
+											pattern="yyyy-MM-dd HH:mm:ss " /></td>
 								</tr>
 							</c:forEach>
-
 						</tbody>
-
 					</table>
-					<a href="/board/register">
-						<button type="button" class="btn btn-primary">글쓰기</button>
-					</a>
 				</div>
 				<!-- /.table-responsive -->
 			</div>
@@ -51,72 +48,115 @@
 		</div>
 		<!-- /.panel -->
 	</div>
+	<button type="button" class="btn btn-primary btn-lg btn-block"
+		onclick="location.href='/board/register'">글쓰기</button>
+		<br/>
+
 	<!-- /.col-lg-6 -->
-	<div class="col-sm-12">
-		<div class="dataTables_paginate paging_simple_numbers"
-			id="dataTables-example_paginate">
-			<ul class="pagination">
-				<li class="paginate_button previous disabled"
+	<div class="dataTables_paginate paging_simple_numbers"
+		id="dataTables-example_paginate">
+		<ul class="pagination" style="display:table; margin-left:auto; margin-right:auto">
+			<c:if test="${pageObj.prev}">
+				<li class="paginate_button previous"
 					aria-controls="dataTables-example" tabindex="0"
-					id="dataTables-example_previous"><a href="#">Previous</a></li>
-				<li class="paginate_button active"
-					aria-controls="dataTables-example" tabindex="0"><a href="#">1</a></li>
-				<li class="paginate_button " aria-controls="dataTables-example"
-					tabindex="0"><a href="#">2</a></li>
-				<li class="paginate_button " aria-controls="dataTables-example"
-					tabindex="0"><a href="#">3</a></li>
-				<li class="paginate_button " aria-controls="dataTables-example"
-					tabindex="0"><a href="#">4</a></li>
-				<li class="paginate_button " aria-controls="dataTables-example"
-					tabindex="0"><a href="#">5</a></li>
-				<li class="paginate_button " aria-controls="dataTables-example"
-					tabindex="0"><a href="#">6</a></li>
+					id="dataTables-example_previous"><a href="${pageObj.start -1}">Previous</a></li>
+			</c:if>
+			<c:forEach begin="${pageObj.start}" end="${pageObj.end}" var="num">
+				<li class="paginate_button" data-page='${num}'
+					aria-controls="dataTables-example" tabindex="0"><a
+					href="${num}"><c:out value="${num}" /></a></li>
+			</c:forEach>
+			<c:if test="${pageObj.next}">
 				<li class="paginate_button next" aria-controls="dataTables-example"
-					tabindex="0" id="dataTables-example_next"><a href="#">Next</a></li>
-			</ul>
-		</div>
+					tabindex="0" id="dataTables-example_next"><a
+					href="${pageObj.end +1}">Next</a></li>
+			</c:if>
+		</ul>
+			<br/><br/>
 	</div>
-	<!-- /.row -->
+</div>
+<!-- /#page-wrapper -->
 
-	<!-- Modal -->
-	<div class="modal fade" id="myModal" tabindex="-1" role="dialog"
-		aria-labelledby="myModalLabel" aria-hidden="true">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal"
-						aria-hidden="true">&times;</button>
-					<h4 class="modal-title" id="myModalLabel">SUCCESS</h4>
-				</div>
-				<div class="modal-body"></div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-primary" data-dismiss="modal">닫기</button>
-				</div>
+
+<form id='actionForm'>
+	<input type='hidden' name='page' id='page' value='${pageObj.page}'>
+</form>
+
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog"
+	aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"
+					aria-hidden="true">&times;</button>
+				<h4 class="modal-title" id="myModalLabel">SUCCESS</h4>
 			</div>
-			<!-- /.modal-content -->
+			<div class="modal-body"></div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
 		</div>
-		<!-- /.modal-dialog -->
+		<!-- /.modal-content -->
 	</div>
-	<!-- /.modal -->
+	<!-- /.modal-dialog -->
+</div>
+
+<%@include file="../includes/footer.jsp"%>
 
 
+<script>
+   $(document).ready(function() {
+      
+	  var actionForm = $("#actionForm");
+      var pageNum = ${pageObj.page};
+      var msg = $("#myModal");
+      var result = '<c:out value="${result}"/>';
 
-	<%@include file="../includes/footer.jsp"%>
+	checkModal(result);
+      
+      history.replaceState({},null,null);
+      
+      function checkModal(result){
+    	  if (result === '' || history.state) {
+    		  return;
+    	  }
+      if (result === 'SUCCESS') {
+         $(".modal-body").html("작업이 성공적으로 처리되였습니다.");
+         msg.modal("show");
+         
+      }
+      
+      }
+      
+      
+      //조회: 제목 클릭 이벤트
+      $(".board").on("click", function(e){
+    	  e.preventDefault();
+    	  var bno = $(this).attr("href");
+    	  actionForm.append("<input type='hidden' name='bno' value='"+bno+"'>");
+     	 actionForm.attr("action", "/board/read")
+    	 .attr("method", "get").submit();
+      });
+      
+      $('.pagination li[data-page='+pageNum+']').addClass("active");   // 속성으로 찾을 수 있다
+      
+      $('.pagination li a').on("click", function(e){
+    	 e.preventDefault(); // 기본 동작 막음 : 눌러도 아무 변화없게
+    	 var target = $(this).attr("href");
 
-	<script>
-		$(document).ready(function() {
+    	 
+      	 $("#page").val(target);
+    	 actionForm.attr("action", "/board/list")
+    	 .attr("method", "get").submit();
+  
+    	  
+      });
 
-			var msg = $("#myModal");
 
-			var result = '<c:out value="${result}"/>';
+   });
+</script>
+</body>
 
-			if (result === 'SUCCESS') {
-				$(".modal-body").html("성공적으로 작성이 완료되었습니다.");
-				msg.modal("show");
-			}
-
-		});
-	</script>
-	</body>
-
-	</html>
+</html>

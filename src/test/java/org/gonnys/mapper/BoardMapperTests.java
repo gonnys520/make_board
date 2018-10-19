@@ -1,6 +1,7 @@
 package org.gonnys.mapper;
 
 import org.gonnys.domain.Board;
+import org.gonnys.domain.PageParam;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,10 +35,24 @@ public class BoardMapperTests {
 	@Test
 	public void testAll() {
 		
-		log.info(mapper.getListAll());
+		PageParam param = new PageParam();
+		param.setPage(3);
 		
-		mapper.getListAll().forEach(board -> log.info(board));
+		log.info(mapper.getList(param));
+		
+		mapper.getList(param).forEach(board -> log.info(board));
 		
 	}
+	
+//	@Test
+//	public void testAll() {
+//		
+//		log.info(mapper.getList());
+//		
+//		mapper.getList().forEach(board -> log.info(board));
+//		
+//		return null;
+//		
+//	}
 	
 }
