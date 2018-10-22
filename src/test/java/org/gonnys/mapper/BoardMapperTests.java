@@ -40,7 +40,7 @@ public class BoardMapperTests {
 		
 		log.info(mapper.getList(param));
 		
-		mapper.getList(param).forEach(board -> log.info(board));
+//		mapper.getList(param).forEach(board -> log.info(board));
 		
 	}
 	

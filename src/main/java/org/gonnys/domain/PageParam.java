@@ -14,9 +14,25 @@ public class PageParam {
 	private int total, start, end, bno;
 	private boolean prev, next;
 
+	private String[] types;
+	private String type;
+	private String keyword;
+
+
+	
 	public PageParam() {
 		this.page = 1;
 		this.display = 10;
+	}
+	
+	public void setType(String type) {
+		
+		this.type = type;
+		if(type == null || type.trim().length() == 0) {
+			
+		}
+		this.types = type.split("");
+		
 	}
 	
 	public void setTotal(int total) {
@@ -47,6 +63,8 @@ public class PageParam {
 		return UriComponentsBuilder.fromPath(path)
 				.queryParam("bno", this.bno)
 				.queryParam("page", this.page)
+				.queryParam("type", this.type)
+				.queryParam("keyword", this.keyword)
 				.toUriString();
 	}
 	

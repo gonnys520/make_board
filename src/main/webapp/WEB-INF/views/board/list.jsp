@@ -19,15 +19,15 @@
 	<div class="col-lg-12">
 		<div class="panel panel-default">
 			<div class="panel-heading">Board List</div>
-			<div style = "margin: 10px 0 0 15px">
-			<select id="select">
-				<option value="10" ${pageObj.display == 10 ? "selected":""}>10</option>
-				<option value="20" ${pageObj.display == 20 ? "selected":""}>20</option>
-				<option value="50" ${pageObj.display == 50 ? "selected":""}>50</option>
-				<option value="100" ${pageObj.display == 100 ? "selected":""}>100</option>
-			</select>
-			개씩 보기</div>
-			
+			<div style="margin: 10px 0 0 15px">
+				<select id="select">
+					<option value="10" ${pageObj.display == 10 ? "selected":""}>10</option>
+					<option value="20" ${pageObj.display == 20 ? "selected":""}>20</option>
+					<option value="50" ${pageObj.display == 50 ? "selected":""}>50</option>
+					<option value="100" ${pageObj.display == 100 ? "selected":""}>100</option>
+				</select> 개씩 보기
+			</div>
+
 			<!-- /.panel-heading -->
 			<div class="panel-body">
 				<div class="table-responsive">
@@ -59,6 +59,23 @@
 			<!-- /.panel-body -->
 		</div>
 		<!-- /.panel -->
+
+	<div class="col-sm-12">
+	  <div>
+	    <select name="type">
+	      <option <c:out value="${pageObj.type == null?'selected':'' }"/>>--</option>
+	      <option value="t" <c:out value="${pageObj.type == 't'?'selected':'' }"/> >제목</option>
+	      <option value="c" <c:out value="${pageObj.type == 'c'?'selected':'' }"/> >내용</option>
+	      <option value="w" <c:out value="${pageObj.type == 'w'?'selected':'' }"/> >작성자</option>
+	      <option value="tc" <c:out value="${pageObj.type == 'tc'?'selected':'' }"/> >제목 + 내용</option>
+	      <option value="tcw" <c:out value="${pageObj.type == 'tcw'?'selected':'' }"/> >제목 + 내용 + 작성자</option>
+	    </select>
+	    <input type='text' name='keyword' value="${pageObj.keyword}">
+	    <button id="searchBtn">Search</button>
+	  </div>
+	</div>
+
+
 	</div>
 	<button type="button" class="btn btn-primary btn-lg btn-block"
 		onclick="location.href='/board/register'">글쓰기</button>
@@ -85,8 +102,7 @@
 					href="${pageObj.end +1}">Next</a></li>
 			</c:if>
 		</ul>
-		<br />
-		<br />
+		<br /> <br />
 	</div>
 </div>
 <!-- /#page-wrapper -->
@@ -124,73 +140,84 @@
 <%@include file="../includes/footer.jsp"%>
 
 
-  <script>
-      $(document).ready(function() {
+<script>
+	$(document)
+			.ready(
+					function() {
 
-         var actionForm = $("#actionForm");
-         var pageNum = ${pageObj.page};
-         
-         //게시판 제목 클릭하기
-         $(".board").on("click",function(e){
-            e.preventDefault();
-            var bno = $(this).attr("href");
-            actionForm.append("<input type='hidden' name='bno' value='"+bno+"'>");
-            actionForm.attr("action", "/board/read")
-            .attr("method", "get").submit();
+						var actionForm = $("#actionForm");
+						var pageNum = ${pageObj.page}
+						;
 
-         });
-         
-         //버튼 활성화
-         $('.pagination li[data-page='+pageNum+']').addClass("active");
-            
-         //버튼 클릭
-         $('.pagination li a').on("click", function(e){
-            
-            e.preventDefault();
-            var target = $(this).attr("href");
-            console.log(target);
-            $("#page").val(target);
+						//게시판 제목 클릭하기
+						$(".board")
+								.on(
+										"click",
+										function(e) {
+											e.preventDefault();
+											var bno = $(this).attr("href");
+											actionForm
+													.append("<input type='hidden' name='bno' value='"+bno+"'>");
+											actionForm.attr("action",
+													"/board/read").attr(
+													"method", "get").submit();
 
-            actionForm.attr("action", "/board/list")
-            .attr("method", "get").submit();
-            
-         });
-             
-         //selectbox 코드
-         $('#select').change(function(e){
-            
-           e.preventDefault();
-           
-             var display = $(this).val();
-           $("#display").val(display);
-           
-            actionForm.attr("action", "/board/list")
-            .attr("method", "get").submit();
-            
-         });
-         
-         var msg = $("#myModal");
-         var result = '<c:out value="${result}"/>';
+										});
 
-         checkModal(result);
-         history.replaceState({}, null, null);
-         
-         function checkModal(result){
-            
-            if(result === ''||history.state){
-               return;
-            }
-            
-            if (result === 'success') {
-                 $(".modal-body").html("작업 성공");
-                 msg.modal("show");
-         }
-         
-      }
-         
-    });
+						//버튼 활성화
+						$('.pagination li[data-page=' + pageNum + ']')
+								.addClass("active");
 
-   </script>
+						//버튼 클릭
+						$('.pagination li a').on(
+								"click",
+								function(e) {
+
+									e.preventDefault();
+									var target = $(this).attr("href");
+									console.log(target);
+									$("#page").val(target);
+
+									actionForm.attr("action", "/board/list")
+											.attr("method", "get").submit();
+
+								});
+
+						//selectbox 코드
+						$('#select').change(
+								function(e) {
+
+									e.preventDefault();
+
+									var display = $(this).val();
+									$("#display").val(display);
+
+									actionForm.attr("action", "/board/list")
+											.attr("method", "get").submit();
+
+								});
+
+						var msg = $("#myModal");
+						var result = '<c:out value="${result}"/>';
+
+						checkModal(result);
+						history.replaceState({}, null, null);
+
+						function checkModal(result) {
+
+							if (result === '' || history.state) {
+								return;
+							}
+
+							if (result === 'success') {
+								$(".modal-body").html("작업 성공");
+								msg.modal("show");
+							}
+
+						}
+
+					});
+</script>
 </body>
 
 </html>
