@@ -48,6 +48,8 @@
 			
 						<form role="form" action="/board/list" method="get">
 							<input type='hidden' name='page' value='${pageObj.page}'>
+                            <input type='hidden' name='type' value='${pageObj.type}'>
+                            <input type='hidden' name='keyword' value='${pageObj.keyword}'>
 							<button type="submit" class="btn btn-default">목록보기</button>
 						</form>
 						<form role="form" action="/board/modify" method="get">
@@ -94,6 +96,12 @@
 
 <script>
 	$(document).ready(function() {
+
+
+		
+		
+		
+		<!-- MODAL -->
 		var msg = $("#myModal");
 		var result = '<c:out value="${result}"/>';
 

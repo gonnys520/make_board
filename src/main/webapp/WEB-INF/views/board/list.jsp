@@ -55,25 +55,34 @@
 					</table>
 				</div>
 				<!-- /.table-responsive -->
+        
+            <div class="col-sm-12">
+      <div style="margin: 0 0 0 72%">
+        <select name="type">
+          <option <c:out value="${pageObj.type == null?'selected':'' }"/>>--</option>
+          <option value="t"
+            <c:out value="${pageObj.type == 't'?'selected':'' }"/>>제목</option>
+          <option value="c"
+            <c:out value="${pageObj.type == 'c'?'selected':'' }"/>>내용</option>
+          <option value="w"
+            <c:out value="${pageObj.type == 'w'?'selected':'' }"/>>작성자</option>
+          <option value="tc"
+            <c:out value="${pageObj.type == 'tc'?'selected':'' }"/>>제목
+            + 내용</option>
+          <option value="tcw"
+            <c:out value="${pageObj.type == 'tcw'?'selected':'' }"/>>제목
+            + 내용 + 작성자</option>
+        </select> <input type='text' name='keyword' value="${pageObj.keyword}">
+        <button id="searchBtn" class="btn btn-default">Search</button>
+      </div>
+    </div>
+        
 			</div>
 			<!-- /.panel-body -->
 		</div>
 		<!-- /.panel -->
 
-	<div class="col-sm-12">
-	  <div>
-	    <select name="type">
-	      <option <c:out value="${pageObj.type == null?'selected':'' }"/>>--</option>
-	      <option value="t" <c:out value="${pageObj.type == 't'?'selected':'' }"/> >제목</option>
-	      <option value="c" <c:out value="${pageObj.type == 'c'?'selected':'' }"/> >내용</option>
-	      <option value="w" <c:out value="${pageObj.type == 'w'?'selected':'' }"/> >작성자</option>
-	      <option value="tc" <c:out value="${pageObj.type == 'tc'?'selected':'' }"/> >제목 + 내용</option>
-	      <option value="tcw" <c:out value="${pageObj.type == 'tcw'?'selected':'' }"/> >제목 + 내용 + 작성자</option>
-	    </select>
-	    <input type='text' name='keyword' value="${pageObj.keyword}">
-	    <button id="searchBtn">Search</button>
-	  </div>
-	</div>
+
 
 
 	</div>
@@ -113,6 +122,8 @@
 	<input type='hidden' name='page' id='page' value='${pageObj.page}'>
 	<input type='hidden' name='display' id='display'
 		value='${pageObj.display}'>
+		  <input type='hidden' name='type' value='${pageObj.type}'>
+  <input type='hidden' name='keyword' value='${pageObj.keyword}'>
 </form>
 
 
@@ -141,82 +152,91 @@
 
 
 <script>
-	$(document)
-			.ready(
-					function() {
+	$(document).ready(
+	function() {
 
-						var actionForm = $("#actionForm");
-						var pageNum = ${pageObj.page}
-						;
+	var actionForm = $("#actionForm");
+	var pageNum = ${pageObj.page};
 
-						//게시판 제목 클릭하기
-						$(".board")
-								.on(
-										"click",
-										function(e) {
-											e.preventDefault();
-											var bno = $(this).attr("href");
-											actionForm
-													.append("<input type='hidden' name='bno' value='"+bno+"'>");
-											actionForm.attr("action",
-													"/board/read").attr(
-													"method", "get").submit();
+	$("#searchBtn").on("click", function(e){
+							
+	var searchTypeValue = $("select[name='type'] option:selected").val();
+	console.log(searchTypeValue);
+							
+	var searchKeyword = $("input[name='keyword']").val();
+	console.log(searchKeyword);
+							
+	if(searchKeyword.trim().length == 0 ){
+	alert("검색어 없음");
+	return;
+	}
+							
+							
+	actionForm.attr("action","/board/list");
+	actionForm.find("input[name='type']").val(searchTypeValue);
+	actionForm.find("input[name='keyword']").val(searchKeyword);
+	$("#page").val(1);
+							
+	actionForm.submit();
+						
+	});
+					
 
-										});
+	//게시판 제목 클릭하기
+	$(".board").on("click",
+	function(e) {
+	e.preventDefault();
+	var bno = $(this).attr("href");
+	actionForm.append("<input type='hidden' name='bno' value='"+bno+"'>");
+	actionForm.attr("action","/board/read").attr("method","get").submit();
+	});
 
-						//버튼 활성화
-						$('.pagination li[data-page=' + pageNum + ']')
-								.addClass("active");
+	//버튼 활성화
+	$('.pagination li[data-page='+ pageNum + ']').addClass("active");
 
-						//버튼 클릭
-						$('.pagination li a').on(
-								"click",
-								function(e) {
+	//버튼 클릭
+	$('.pagination li a').on("click",function(e)
+			{e.preventDefault();
+			
+	var target = $(this).attr("href");
+	console.log(target);
+	$("#page").val(target);
+	actionForm.attr("action","/board/list")
+	.attr("method","get").submit();
+});
 
-									e.preventDefault();
-									var target = $(this).attr("href");
-									console.log(target);
-									$("#page").val(target);
+	//selectbox 코드
+	$('#select').change(function(e) {
+	e.preventDefault();
 
-									actionForm.attr("action", "/board/list")
-											.attr("method", "get").submit();
+	var display = $(this).val();
+	$("#display").val(display);
+	actionForm.attr("action","/board/list")
+	.attr("method","get").submit();
+});
 
-								});
+	var msg = $("#myModal");
+	var result = '<c:out value="${result}"/>';
 
-						//selectbox 코드
-						$('#select').change(
-								function(e) {
+	checkModal(result);
+	history.replaceState({}, null,null);
 
-									e.preventDefault();
+	function checkModal(result) {
+	if (result === ''|| history.state) {
+	return;
+	}
 
-									var display = $(this).val();
-									$("#display").val(display);
+	if (result === 'success') {
+	$(".modal-body").html(
+	"작업 성공");
+	msg.modal("show");
+		}
+	}
+});
 
-									actionForm.attr("action", "/board/list")
-											.attr("method", "get").submit();
-
-								});
-
-						var msg = $("#myModal");
-						var result = '<c:out value="${result}"/>';
-
-						checkModal(result);
-						history.replaceState({}, null, null);
-
-						function checkModal(result) {
-
-							if (result === '' || history.state) {
-								return;
-							}
-
-							if (result === 'success') {
-								$(".modal-body").html("작업 성공");
-								msg.modal("show");
-							}
-
-						}
-
-					});
+			
+						
+					
 </script>
 </body>
 

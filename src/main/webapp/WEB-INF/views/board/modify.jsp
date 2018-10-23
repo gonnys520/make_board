@@ -29,7 +29,6 @@
 				<!-- /.row -->
 				<div class="row">
 					<div class="col-lg-12">
-
 						<form role="form" action="/board/modify" method="post">
 							<input type='hidden' name='bno' value='${board.bno}'>
 							<div class="form-group">
@@ -45,6 +44,8 @@
 								<textarea class="form-control" name='content' rows="3"><c:out
 										value="${board.content}" /></textarea>
 							</div>
+           
+                        
 							<div class="form-group">
 								<button type="submit" class="btn btn-primary">수정하기</button>
 							</div>
